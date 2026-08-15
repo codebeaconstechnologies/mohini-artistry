@@ -1,0 +1,37 @@
+name = "mohini-artistry-api"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+FRONTEND_ORIGIN = "http://localhost:5173"
+RAZORPAY_KEY_ID = "rzp_test_placeholder"
+R2_PUBLIC_BASE_URL = "https://pub-REPLACE_WITH_R2_DEV_ID.r2.dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mohini-artistry-db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "PRODUCT_IMAGES"
+bucket_name = "mohini-artistry-product-images"
+
+# Secrets (never stored here — set via `wrangler secret put NAME`):
+#   JWT_SECRET
+#   RAZORPAY_KEY_SECRET
+#   RAZORPAY_WEBHOOK_SECRET
+
+[env.production.vars]
+FRONTEND_ORIGIN = "https://mohini-artistry.pages.dev"
+RAZORPAY_KEY_ID = "rzp_test_placeholder"
+R2_PUBLIC_BASE_URL = "https://pub-REPLACE_WITH_R2_DEV_ID.r2.dev"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "mohini-artistry-db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[[env.production.r2_buckets]]
+binding = "PRODUCT_IMAGES"
+bucket_name = "mohini-artistry-product-images"

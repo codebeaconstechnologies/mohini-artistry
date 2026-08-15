@@ -1,0 +1,3 @@
+JWT_SECRET=replace-with-a-long-random-string
+RAZORPAY_KEY_SECRET=your_razorpay_test_key_secret
+RAZORPAY_WEBHOOK_SECRET=your_razorpay_test_webhook_secret

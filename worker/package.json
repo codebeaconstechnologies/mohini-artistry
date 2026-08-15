@@ -1,0 +1,25 @@
+{
+  "name": "@mohini-artistry/worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply mohini-artistry-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply mohini-artistry-db --remote",
+    "db:seed:local": "wrangler d1 execute mohini-artistry-db --local --file=./seed.sql",
+    "db:seed:remote": "wrangler d1 execute mohini-artistry-db --remote --file=./seed.sql",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mohini-artistry/shared": "*",
+    "hono": "^4.6.9",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241022.0",
+    "typescript": "^5.6.3",
+    "wrangler": "^3.86.0"
+  }
+}
