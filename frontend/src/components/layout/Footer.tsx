@@ -70,11 +70,11 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-mist sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>
-            For Website Development Contact{" "}
+            For Website Development Contact 🌐{" "}
             <a href="https://codebeacons.in" target="_blank" rel="noopener noreferrer" className="hover:text-gold">
               Codebeacons.in
             </a>{" "}
-            · +91 81491 05574
+            · 📞 +91 81491 05574
           </span>
           <span>© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</span>
         </div>
