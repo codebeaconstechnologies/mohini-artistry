@@ -21,7 +21,7 @@ export const CONTACT_PHONE_DISPLAY = "+91 97662 92409";
 export const CONTACT_PHONE_TEL = "+919766292409";
 
 /** Contact email shown in the footer/contact page. */
-export const CONTACT_EMAIL = "mohiniartistry@gmail.com";
+export const CONTACT_EMAIL = "mohiniartistry11@gmail.com";
 
 /** Business location shown in the footer — matches the default shipping state. */
 export const BUSINESS_CITY = "Pune";
