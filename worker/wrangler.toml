@@ -4,7 +4,7 @@ compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-FRONTEND_ORIGIN = "https://mohini-artistry.pages.dev"
+FRONTEND_ORIGIN = "https://mohiniartistry.codebeacons.in,https://mohini-artistry.pages.dev"
 RAZORPAY_KEY_ID = "rzp_test_TRwbBnF3MZrRFU"
 R2_PUBLIC_BASE_URL = "https://pub-79e3bfd0301940fb92417ea2d904b76c.r2.dev"
 
@@ -23,7 +23,7 @@ bucket_name = "mohini-artistry-product-images"
 #   RAZORPAY_WEBHOOK_SECRET
 
 [env.production.vars]
-FRONTEND_ORIGIN = "https://mohini-artistry.pages.dev"
+FRONTEND_ORIGIN = "https://mohiniartistry.codebeacons.in,https://mohini-artistry.pages.dev"
 RAZORPAY_KEY_ID = "rzp_test_TRwbBnF3MZrRFU"
 R2_PUBLIC_BASE_URL = "https://pub-79e3bfd0301940fb92417ea2d904b76c.r2.dev"
 
