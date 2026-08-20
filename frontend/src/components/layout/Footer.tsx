@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { CATEGORY_SEEDS } from "@mohini-artistry/shared";
-import { CONTACT_PHONE_DISPLAY, CONTACT_EMAIL, BUSINESS_CITY, BUSINESS_STATE, SITE_NAME, SITE_TAGLINE } from "../../lib/constants";
+import { SITE_NAME, SITE_TAGLINE } from "../../lib/constants";
 
 export default function Footer() {
   return (
@@ -70,7 +70,11 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-xs text-mist sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>
-            {BUSINESS_CITY}, {BUSINESS_STATE}, India · {CONTACT_PHONE_DISPLAY} · {CONTACT_EMAIL}
+            For Website Development Contact{" "}
+            <a href="https://codebeacons.in" target="_blank" rel="noopener noreferrer" className="hover:text-gold">
+              Codebeacons.in
+            </a>{" "}
+            · +91 81491 05574
           </span>
           <span>© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</span>
         </div>
