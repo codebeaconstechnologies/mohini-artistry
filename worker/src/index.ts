@@ -7,6 +7,7 @@ import auth from "./routes/auth";
 import checkout from "./routes/checkout";
 import payments from "./routes/payments";
 import orders, { trackRouter } from "./routes/orders";
+import returns from "./routes/returns";
 import categories from "./routes/categories";
 import products from "./routes/products";
 import reviews from "./routes/reviews";
@@ -15,6 +16,7 @@ import cart from "./routes/cart";
 import coupons from "./routes/coupons";
 import adminProducts from "./routes/admin/products";
 import adminOrders from "./routes/admin/orders";
+import adminReturns from "./routes/admin/returns";
 import adminCoupons from "./routes/admin/coupons";
 import adminUsers from "./routes/admin/users";
 
@@ -43,6 +45,7 @@ app.route("/api/checkout", checkout);
 app.route("/api/payments", payments);
 app.route("/api/orders", orders);
 app.route("/api/track", trackRouter);
+app.route("/api/returns", returns);
 
 app.route("/api/categories", categories);
 app.route("/api/products", products);
@@ -57,6 +60,7 @@ app.route("/api/coupons", coupons);
 // ---- Admin routes (all require requireAuth + requireAdmin, enforced per-router) ----
 app.route("/api/admin/products", adminProducts);
 app.route("/api/admin/orders", adminOrders);
+app.route("/api/admin/returns", adminReturns);
 app.route("/api/admin/coupons", adminCoupons);
 app.route("/api/admin/users", adminUsers);
 

@@ -1,5 +1,5 @@
 import type { Env } from "../env";
-import type { Order, OrderItem, OrderStatusHistoryEntry } from "@mohini-artistry/shared";
+import type { Order, OrderItem, OrderStatusHistoryEntry, ReturnRequest } from "@mohini-artistry/shared";
 
 interface OrderRow {
   id: number;
@@ -21,6 +21,7 @@ interface OrderRow {
   payment_status: string;
   created_at: number;
   updated_at: number;
+  delivered_at: number | null;
 }
 
 interface OrderItemRow {
@@ -33,6 +34,8 @@ interface OrderItemRow {
   line_total_paise: number;
   slug?: string;
   image_url?: string | null;
+  is_refund_allowed: number;
+  is_replace_allowed: number;
 }
 
 interface HistoryRow {
@@ -41,14 +44,57 @@ interface HistoryRow {
   created_at: number;
 }
 
+interface ReturnRequestRow {
+  id: number;
+  order_id: number;
+  order_item_id: number;
+  user_id: number;
+  type: string;
+  status: string;
+  reason: string;
+  admin_note: string | null;
+  return_courier: string | null;
+  return_tracking_number: string | null;
+  replacement_courier: string | null;
+  replacement_tracking_number: string | null;
+  refund_amount_paise: number | null;
+  created_at: number;
+  updated_at: number;
+}
+
 const ORDER_COLUMNS = `
   id, order_number, status, subtotal_paise, shipping_paise, discount_paise, total_paise,
   coupon_code, shipping_name, shipping_phone, shipping_address1, shipping_address2,
   shipping_state, shipping_city, shipping_pincode, contact_email, payment_status,
-  created_at, updated_at
+  created_at, updated_at, delivered_at
 `;
 
-function rowToOrder(row: OrderRow, items: OrderItem[], history: OrderStatusHistoryEntry[]): Order {
+function rowToReturnRequest(row: ReturnRequestRow): ReturnRequest {
+  return {
+    id: row.id,
+    orderId: row.order_id,
+    orderItemId: row.order_item_id,
+    userId: row.user_id,
+    type: row.type as ReturnRequest["type"],
+    status: row.status as ReturnRequest["status"],
+    reason: row.reason,
+    adminNote: row.admin_note,
+    returnCourier: row.return_courier,
+    returnTrackingNumber: row.return_tracking_number,
+    replacementCourier: row.replacement_courier,
+    replacementTrackingNumber: row.replacement_tracking_number,
+    refundAmountPaise: row.refund_amount_paise,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function rowToOrder(
+  row: OrderRow,
+  items: OrderItem[],
+  history: OrderStatusHistoryEntry[],
+  returnRequests: ReturnRequest[]
+): Order {
   return {
     id: row.id,
     orderNumber: row.order_number,
@@ -69,23 +115,31 @@ function rowToOrder(row: OrderRow, items: OrderItem[], history: OrderStatusHisto
     paymentStatus: row.payment_status as Order["paymentStatus"],
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    deliveredAt: row.delivered_at,
     items,
     statusHistory: history,
+    returnRequests,
   };
 }
 
 async function fetchItemsAndHistory(
   env: Env,
   orderIds: number[]
-): Promise<{ itemsByOrder: Map<number, OrderItem[]>; historyByOrder: Map<number, OrderStatusHistoryEntry[]> }> {
+): Promise<{
+  itemsByOrder: Map<number, OrderItem[]>;
+  historyByOrder: Map<number, OrderStatusHistoryEntry[]>;
+  returnRequestsByOrder: Map<number, ReturnRequest[]>;
+}> {
   const itemsByOrder = new Map<number, OrderItem[]>();
   const historyByOrder = new Map<number, OrderStatusHistoryEntry[]>();
-  if (orderIds.length === 0) return { itemsByOrder, historyByOrder };
+  const returnRequestsByOrder = new Map<number, ReturnRequest[]>();
+  if (orderIds.length === 0) return { itemsByOrder, historyByOrder, returnRequestsByOrder };
 
   const placeholders = orderIds.map(() => "?").join(",");
 
   const itemsResult = await env.DB.prepare(
     `SELECT oi.id, oi.order_id, oi.product_id, oi.product_name, oi.unit_price_paise, oi.quantity, oi.line_total_paise,
+            oi.is_refund_allowed, oi.is_replace_allowed,
             p.slug AS slug,
             (SELECT url FROM product_images pi WHERE pi.product_id = oi.product_id
                ORDER BY pi.is_primary DESC, pi.sort_order ASC LIMIT 1) AS image_url
@@ -107,6 +161,8 @@ async function fetchItemsAndHistory(
       quantity: row.quantity,
       lineTotalPaise: row.line_total_paise,
       imageUrl: row.image_url ?? null,
+      isRefundAllowed: row.is_refund_allowed === 1,
+      isReplaceAllowed: row.is_replace_allowed === 1,
     });
     itemsByOrder.set(row.order_id, list);
   }
@@ -124,7 +180,22 @@ async function fetchItemsAndHistory(
     historyByOrder.set(row.order_id, list);
   }
 
-  return { itemsByOrder, historyByOrder };
+  const returnsResult = await env.DB.prepare(
+    `SELECT id, order_id, order_item_id, user_id, type, status, reason, admin_note,
+            return_courier, return_tracking_number, replacement_courier, replacement_tracking_number,
+            refund_amount_paise, created_at, updated_at
+     FROM return_requests WHERE order_id IN (${placeholders}) ORDER BY created_at ASC`
+  )
+    .bind(...orderIds)
+    .all<ReturnRequestRow>();
+
+  for (const row of returnsResult.results ?? []) {
+    const list = returnRequestsByOrder.get(row.order_id) ?? [];
+    list.push(rowToReturnRequest(row));
+    returnRequestsByOrder.set(row.order_id, list);
+  }
+
+  return { itemsByOrder, historyByOrder, returnRequestsByOrder };
 }
 
 export async function getOrdersForUser(env: Env, userId: number): Promise<Order[]> {
@@ -135,8 +206,10 @@ export async function getOrdersForUser(env: Env, userId: number): Promise<Order[
     .all<OrderRow>();
 
   const rows = result.results ?? [];
-  const { itemsByOrder, historyByOrder } = await fetchItemsAndHistory(env, rows.map((r) => r.id));
-  return rows.map((row) => rowToOrder(row, itemsByOrder.get(row.id) ?? [], historyByOrder.get(row.id) ?? []));
+  const { itemsByOrder, historyByOrder, returnRequestsByOrder } = await fetchItemsAndHistory(env, rows.map((r) => r.id));
+  return rows.map((row) =>
+    rowToOrder(row, itemsByOrder.get(row.id) ?? [], historyByOrder.get(row.id) ?? [], returnRequestsByOrder.get(row.id) ?? [])
+  );
 }
 
 export async function getOrderByNumber(env: Env, orderNumber: string): Promise<Order | null> {
@@ -145,8 +218,8 @@ export async function getOrderByNumber(env: Env, orderNumber: string): Promise<O
     .first<OrderRow>();
   if (!row) return null;
 
-  const { itemsByOrder, historyByOrder } = await fetchItemsAndHistory(env, [row.id]);
-  return rowToOrder(row, itemsByOrder.get(row.id) ?? [], historyByOrder.get(row.id) ?? []);
+  const { itemsByOrder, historyByOrder, returnRequestsByOrder } = await fetchItemsAndHistory(env, [row.id]);
+  return rowToOrder(row, itemsByOrder.get(row.id) ?? [], historyByOrder.get(row.id) ?? [], returnRequestsByOrder.get(row.id) ?? []);
 }
 
 export async function getOrderById(env: Env, id: number): Promise<Order | null> {
@@ -155,8 +228,8 @@ export async function getOrderById(env: Env, id: number): Promise<Order | null> 
     .first<OrderRow>();
   if (!row) return null;
 
-  const { itemsByOrder, historyByOrder } = await fetchItemsAndHistory(env, [row.id]);
-  return rowToOrder(row, itemsByOrder.get(row.id) ?? [], historyByOrder.get(row.id) ?? []);
+  const { itemsByOrder, historyByOrder, returnRequestsByOrder } = await fetchItemsAndHistory(env, [row.id]);
+  return rowToOrder(row, itemsByOrder.get(row.id) ?? [], historyByOrder.get(row.id) ?? [], returnRequestsByOrder.get(row.id) ?? []);
 }
 
 export interface AdminOrdersQuery {
@@ -197,9 +270,9 @@ export async function getAllOrdersAdmin(
     .all<OrderRow>();
 
   const rows = result.results ?? [];
-  const { itemsByOrder, historyByOrder } = await fetchItemsAndHistory(env, rows.map((r) => r.id));
+  const { itemsByOrder, historyByOrder, returnRequestsByOrder } = await fetchItemsAndHistory(env, rows.map((r) => r.id));
   const items = rows.map((row) =>
-    rowToOrder(row, itemsByOrder.get(row.id) ?? [], historyByOrder.get(row.id) ?? [])
+    rowToOrder(row, itemsByOrder.get(row.id) ?? [], historyByOrder.get(row.id) ?? [], returnRequestsByOrder.get(row.id) ?? [])
   );
 
   return { items, total: countRow?.count ?? 0 };

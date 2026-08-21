@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import type { Order, OrderStatus } from "@mohini-artistry/shared";
-import { ORDER_STATUS_TRANSITIONS, ORDER_STATUS_LABELS, getOrderDisplayStatus } from "@mohini-artistry/shared";
+import type { Order, OrderStatus, ReturnRequest } from "@mohini-artistry/shared";
+import {
+  ORDER_STATUS_TRANSITIONS,
+  ORDER_STATUS_LABELS,
+  getOrderDisplayStatus,
+  getReturnStatusLabel,
+} from "@mohini-artistry/shared";
 import { adminApi } from "../../api/admin";
 import { formatPaise } from "../../lib/money";
 import { ApiClientError } from "../../api/client";
 import Spinner from "../../components/common/Spinner";
+import ReturnRequestAdminRow from "../../components/admin/ReturnRequestAdminRow";
 
 export default function AdminOrderDetail() {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +41,17 @@ export default function AdminOrderDetail() {
       setError(err instanceof ApiClientError ? err.message : "Could not update order status.");
     } finally {
       setIsUpdating(false);
+    }
+  }
+
+  async function handleToggleFlag(itemId: number, field: "isRefundAllowed" | "isReplaceAllowed", value: boolean) {
+    if (!order) return;
+    setError(null);
+    try {
+      const updated = await adminApi.orders.setItemFlags(order.id, itemId, { [field]: value });
+      setOrder(updated);
+    } catch (err) {
+      setError(err instanceof ApiClientError ? err.message : "Could not update the item's flags.");
     }
   }
 
@@ -83,13 +100,31 @@ export default function AdminOrderDetail() {
 
       <div className="rounded-2xl border border-hairline p-5">
         <h2 className="mb-3 text-sm font-semibold text-teal">Items</h2>
-        <ul className="space-y-2 text-sm text-secondary">
+        <ul className="space-y-3 text-sm text-secondary">
           {order.items.map((item) => (
-            <li key={item.id} className="flex justify-between">
+            <li key={item.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-hairline pb-3 last:border-0 last:pb-0">
               <span>
                 {item.productName} × {item.quantity}
               </span>
-              <span>{formatPaise(item.lineTotalPaise)}</span>
+              <div className="flex items-center gap-4">
+                <span>{formatPaise(item.lineTotalPaise)}</span>
+                <label className="flex items-center gap-1 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={item.isRefundAllowed}
+                    onChange={(e) => void handleToggleFlag(item.id, "isRefundAllowed", e.target.checked)}
+                  />
+                  Refund allowed
+                </label>
+                <label className="flex items-center gap-1 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={item.isReplaceAllowed}
+                    onChange={(e) => void handleToggleFlag(item.id, "isReplaceAllowed", e.target.checked)}
+                  />
+                  Replace allowed
+                </label>
+              </div>
             </li>
           ))}
         </ul>
@@ -141,6 +176,22 @@ export default function AdminOrderDetail() {
           ))}
         </ul>
       </div>
+
+      {order.returnRequests.length > 0 && (
+        <div className="mt-4 rounded-2xl border border-hairline p-5">
+          <h2 className="mb-3 text-sm font-semibold text-teal">Return / Replacement Requests</h2>
+          <ul className="space-y-3">
+            {order.returnRequests.map((request: ReturnRequest) => (
+              <ReturnRequestAdminRow
+                key={request.id}
+                request={request}
+                productName={order.items.find((item) => item.id === request.orderItemId)?.productName ?? "Item"}
+                onUpdated={setOrder}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

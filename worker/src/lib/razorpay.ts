@@ -37,6 +37,37 @@ export async function createRazorpayOrder(
   return (await res.json()) as RazorpayOrder;
 }
 
+export interface RazorpayRefund {
+  id: string;
+  amount: number;
+  status: string;
+}
+
+export async function createRefund(
+  keyId: string,
+  keySecret: string,
+  paymentId: string,
+  amountPaise: number,
+  notes?: Record<string, string>
+): Promise<RazorpayRefund> {
+  const auth = btoa(`${keyId}:${keySecret}`);
+  const res = await fetch(`${RAZORPAY_API_BASE}/payments/${encodeURIComponent(paymentId)}/refund`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ amount: amountPaise, notes: notes ?? {} }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Razorpay refund failed (${res.status}): ${body}`);
+  }
+
+  return (await res.json()) as RazorpayRefund;
+}
+
 async function hmacSha256Hex(secret: string, message: string): Promise<string> {
   const key = await crypto.subtle.importKey(
     "raw",

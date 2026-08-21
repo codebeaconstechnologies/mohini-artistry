@@ -1,4 +1,5 @@
 import type { OrderStatus, PaymentStatus } from "../constants/order-status";
+import type { ReturnRequestStatus, ReturnRequestType } from "../constants/return-status";
 
 export interface OrderItem {
   id: number;
@@ -9,6 +10,26 @@ export interface OrderItem {
   quantity: number;
   lineTotalPaise: number;
   imageUrl?: string | null;
+  isRefundAllowed: boolean;
+  isReplaceAllowed: boolean;
+}
+
+export interface ReturnRequest {
+  id: number;
+  orderId: number;
+  orderItemId: number;
+  userId: number;
+  type: ReturnRequestType;
+  status: ReturnRequestStatus;
+  reason: string;
+  adminNote: string | null;
+  returnCourier: string | null;
+  returnTrackingNumber: string | null;
+  replacementCourier: string | null;
+  replacementTrackingNumber: string | null;
+  refundAmountPaise: number | null;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface OrderStatusHistoryEntry {
@@ -37,8 +58,10 @@ export interface Order {
   paymentStatus: PaymentStatus;
   createdAt: number;
   updatedAt: number;
+  deliveredAt: number | null;
   items: OrderItem[];
   statusHistory: OrderStatusHistoryEntry[];
+  returnRequests: ReturnRequest[];
 }
 
 export interface ShippingAddressInput {

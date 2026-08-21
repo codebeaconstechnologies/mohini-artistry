@@ -24,6 +24,7 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminProductForm from "./pages/admin/AdminProductForm";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
+import AdminReturns from "./pages/admin/AdminReturns";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminUsers from "./pages/admin/AdminUsers";
 
@@ -57,6 +58,7 @@ export default function AppRoutes() {
         <Route path="products/:id/edit" element={<AdminProductForm />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="orders/:id" element={<AdminOrderDetail />} />
+        <Route path="returns" element={<AdminReturns />} />
         <Route path="coupons" element={<AdminCoupons />} />
         <Route path="users" element={<AdminUsers />} />
       </Route>

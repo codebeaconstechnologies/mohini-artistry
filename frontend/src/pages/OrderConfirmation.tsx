@@ -6,6 +6,7 @@ import { ordersApi } from "../api/orders";
 import { formatPaise } from "../lib/money";
 import Spinner from "../components/common/Spinner";
 import EmptyState from "../components/common/EmptyState";
+import ReturnRequestPanel from "../components/orders/ReturnRequestPanel";
 
 export default function OrderConfirmation() {
   const { orderNumber } = useParams<{ orderNumber: string }>();
@@ -61,14 +62,17 @@ export default function OrderConfirmation() {
         <h2 className="mb-4 font-display text-lg font-semibold text-teal">Order Summary</h2>
         <ul className="divide-y divide-hairline">
           {order.items.map((item) => (
-            <li key={item.id} className="flex items-center justify-between gap-4 py-3">
-              <div>
-                <p className="text-sm font-medium text-teal">{item.productName}</p>
-                <p className="text-xs text-secondary">
-                  Qty {item.quantity} × {formatPaise(item.unitPricePaise)}
-                </p>
+            <li key={item.id} className="py-3">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-teal">{item.productName}</p>
+                  <p className="text-xs text-secondary">
+                    Qty {item.quantity} × {formatPaise(item.unitPricePaise)}
+                  </p>
+                </div>
+                <span className="text-sm font-semibold text-teal">{formatPaise(item.lineTotalPaise)}</span>
               </div>
-              <span className="text-sm font-semibold text-teal">{formatPaise(item.lineTotalPaise)}</span>
+              <ReturnRequestPanel order={order} item={item} onUpdated={setOrder} />
             </li>
           ))}
         </ul>

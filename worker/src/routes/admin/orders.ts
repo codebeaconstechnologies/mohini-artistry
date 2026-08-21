@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { adminOrderStatusSchema, ORDER_STATUS_TRANSITIONS, type OrderStatus } from "@mohini-artistry/shared";
+import { adminOrderStatusSchema, adminSetItemFlagsSchema, ORDER_STATUS_TRANSITIONS, type OrderStatus } from "@mohini-artistry/shared";
 import type { Env, Variables } from "../../env";
 import { requireAuth, requireAdmin } from "../../middleware/auth";
 import { HttpError } from "../../middleware/errorHandler";
@@ -64,9 +64,15 @@ adminOrders.patch("/:id/status", async (c) => {
   }
 
   const now = nowMs();
-  await c.env.DB.prepare("UPDATE orders SET status = ?, updated_at = ? WHERE id = ?")
-    .bind(nextStatus, now, id)
-    .run();
+  if (nextStatus === "delivered") {
+    await c.env.DB.prepare("UPDATE orders SET status = ?, delivered_at = ?, updated_at = ? WHERE id = ?")
+      .bind(nextStatus, now, now, id)
+      .run();
+  } else {
+    await c.env.DB.prepare("UPDATE orders SET status = ?, updated_at = ? WHERE id = ?")
+      .bind(nextStatus, now, id)
+      .run();
+  }
 
   await c.env.DB.prepare(
     "INSERT INTO order_status_history (order_id, status, note, created_at) VALUES (?, ?, ?, ?)"
@@ -75,6 +81,39 @@ adminOrders.patch("/:id/status", async (c) => {
     .run();
 
   const updated = await getOrderById(c.env, id);
+  return c.json(updated);
+});
+
+adminOrders.patch("/:orderId/items/:itemId/flags", async (c) => {
+  const orderId = Number(c.req.param("orderId"));
+  const itemId = Number(c.req.param("itemId"));
+  if (!Number.isInteger(orderId) || !Number.isInteger(itemId)) {
+    throw new HttpError(400, "Invalid order or item id.", "VALIDATION_ERROR");
+  }
+
+  const body = adminSetItemFlagsSchema.parse(await c.req.json());
+  const item = await c.env.DB.prepare("SELECT id FROM order_items WHERE id = ? AND order_id = ?")
+    .bind(itemId, orderId)
+    .first<{ id: number }>();
+  if (!item) throw new HttpError(404, "Order item not found.", "NOT_FOUND");
+
+  const sets: string[] = [];
+  const params: unknown[] = [];
+  if (body.isRefundAllowed !== undefined) {
+    sets.push("is_refund_allowed = ?");
+    params.push(body.isRefundAllowed ? 1 : 0);
+  }
+  if (body.isReplaceAllowed !== undefined) {
+    sets.push("is_replace_allowed = ?");
+    params.push(body.isReplaceAllowed ? 1 : 0);
+  }
+  if (sets.length > 0) {
+    await c.env.DB.prepare(`UPDATE order_items SET ${sets.join(", ")} WHERE id = ?`)
+      .bind(...params, itemId)
+      .run();
+  }
+
+  const updated = await getOrderById(c.env, orderId);
   return c.json(updated);
 });
 

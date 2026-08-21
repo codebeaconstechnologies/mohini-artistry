@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { CATEGORY_SLUGS } from "../constants/categories";
 import { ORDER_STATUSES } from "../constants/order-status";
+import { RETURN_REQUEST_TYPES } from "../constants/return-status";
 
 export const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(200),
@@ -115,3 +116,30 @@ export type AdminCouponInput = z.infer<typeof adminCouponSchema>;
 
 export const adminCouponUpdateSchema = adminCouponSchema.partial();
 export type AdminCouponUpdateInput = z.infer<typeof adminCouponUpdateSchema>;
+
+// ---- Refunds & Replacements ----
+
+export const createReturnRequestSchema = z.object({
+  orderItemId: z.number().int().positive(),
+  type: z.enum(RETURN_REQUEST_TYPES as unknown as [string, ...string[]]),
+  reason: z.string().trim().min(5).max(1000),
+});
+export type CreateReturnRequestInput = z.infer<typeof createReturnRequestSchema>;
+
+export const shipTrackingSchema = z.object({
+  courier: z.string().trim().min(2).max(80),
+  trackingNumber: z.string().trim().min(2).max(80),
+});
+export type ShipTrackingInput = z.infer<typeof shipTrackingSchema>;
+
+export const adminReturnDecisionSchema = z.object({
+  action: z.enum(["approve", "reject"]),
+  note: z.string().trim().max(500).optional(),
+});
+export type AdminReturnDecisionInput = z.infer<typeof adminReturnDecisionSchema>;
+
+export const adminSetItemFlagsSchema = z.object({
+  isRefundAllowed: z.boolean().optional(),
+  isReplaceAllowed: z.boolean().optional(),
+});
+export type AdminSetItemFlagsInput = z.infer<typeof adminSetItemFlagsSchema>;
