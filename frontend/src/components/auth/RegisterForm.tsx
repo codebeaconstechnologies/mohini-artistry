@@ -74,9 +74,12 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) 
           id="register-phone"
           type="tel"
           autoComplete="tel"
+          inputMode="numeric"
           placeholder="10-digit mobile number"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+          maxLength={10}
+          pattern="[6-9]\d{9}"
           className="w-full rounded-lg border border-hairline px-3 py-2 text-sm focus:border-magenta focus:outline-none"
         />
       </div>

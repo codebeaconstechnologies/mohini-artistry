@@ -57,9 +57,12 @@ export default function AddressForm({ value, onChange, errors }: AddressFormProp
         <input
           type="tel"
           autoComplete="tel"
+          inputMode="numeric"
           placeholder="10-digit mobile number"
           value={value.phone}
-          onChange={(e) => set("phone", e.target.value)}
+          onChange={(e) => set("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
+          maxLength={10}
+          pattern="[6-9]\d{9}"
           className={inputClass}
         />
       </Field>
