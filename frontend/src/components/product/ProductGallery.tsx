@@ -13,7 +13,7 @@ export default function ProductGallery({ images, productName }: { images: Produc
   return (
     <div className="flex flex-col gap-3">
       <div className="aspect-square w-full overflow-hidden rounded-2xl bg-cream">
-        <img src={active.url} alt={productName} className="h-full w-full object-cover" />
+        <img src={active.url} alt={productName} className="h-full w-full object-contain" />
       </div>
       {sorted.length > 1 && (
         <div className="flex gap-2 overflow-x-auto">
@@ -26,7 +26,7 @@ export default function ProductGallery({ images, productName }: { images: Produc
                 i === activeIndex ? "border-magenta" : "border-transparent"
               }`}
             >
-              <img src={img.url} alt="" className="h-full w-full object-cover" />
+              <img src={img.url} alt="" className="h-full w-full object-contain" />
             </button>
           ))}
         </div>
