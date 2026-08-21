@@ -7,12 +7,14 @@ import { ordersApi } from "../api/orders";
 import { formatPaise } from "../lib/money";
 import Spinner from "../components/common/Spinner";
 import EmptyState from "../components/common/EmptyState";
+import LogoutConfirmModal from "../components/layout/LogoutConfirmModal";
 
 export default function Account() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -49,12 +51,16 @@ export default function Account() {
         </div>
         <button
           type="button"
-          onClick={logout}
+          onClick={() => setIsLogoutConfirmOpen(true)}
           className="rounded-full border border-teal px-4 py-2 text-sm font-semibold text-teal transition-colors hover:bg-teal hover:text-white"
         >
           Log Out
         </button>
       </div>
+
+      {isLogoutConfirmOpen && (
+        <LogoutConfirmModal onConfirm={logout} onCancel={() => setIsLogoutConfirmOpen(false)} />
+      )}
 
       <h2 className="mb-4 mt-10 font-display text-xl font-semibold text-teal">Order History</h2>
       {isLoading ? (

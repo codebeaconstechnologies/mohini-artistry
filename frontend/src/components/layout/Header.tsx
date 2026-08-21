@@ -5,8 +5,9 @@ import { useAuthStore } from "../../store/authStore";
 import { useCartStore, selectCartItemCount } from "../../store/cartStore";
 import { useWishlistStore } from "../../store/wishlistStore";
 import { useUiStore } from "../../store/uiStore";
-import { CartIcon, HeartIcon, MenuIcon, CloseIcon, ChevronDownIcon, UserIcon } from "../common/icons";
+import { CartIcon, HeartIcon, MenuIcon, CloseIcon, ChevronDownIcon, UserIcon, LogoutIcon } from "../common/icons";
 import { SITE_NAME } from "../../lib/constants";
+import LogoutConfirmModal from "./LogoutConfirmModal";
 
 const MOBILE_INFO_LINKS: { label: string; to: string }[] = [
   { label: "How to Order", to: "/how-to-order" },
@@ -21,13 +22,22 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 export default function Header() {
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const navigate = useNavigate();
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
   const cartCount = useCartStore(selectCartItemCount);
   const wishlistCount = useWishlistStore((s) => s.productIds.size);
   const openCart = useUiStore((s) => s.openCart);
+
+  function handleConfirmLogout() {
+    logout();
+    setIsLogoutConfirmOpen(false);
+    setIsMobileOpen(false);
+    navigate("/");
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-hairline bg-cream/95 backdrop-blur">
@@ -129,6 +139,17 @@ export default function Header() {
             {isAuthenticated ? user?.fullName.split(" ")[0] : "Login"}
           </button>
 
+          {isAuthenticated && (
+            <button
+              type="button"
+              aria-label="Log out"
+              onClick={() => setIsLogoutConfirmOpen(true)}
+              className="hidden rounded-full p-2 text-teal hover:bg-cream sm:flex"
+            >
+              <LogoutIcon className="h-5 w-5" />
+            </button>
+          )}
+
           <button
             type="button"
             aria-label="Toggle menu"
@@ -174,7 +195,21 @@ export default function Header() {
           >
             {isAuthenticated ? `My Account (${user?.fullName.split(" ")[0]})` : "Login / Register"}
           </Link>
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={() => setIsLogoutConfirmOpen(true)}
+              className="flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-magenta"
+            >
+              <LogoutIcon className="h-4 w-4" />
+              Log Out
+            </button>
+          )}
         </nav>
+      )}
+
+      {isLogoutConfirmOpen && (
+        <LogoutConfirmModal onConfirm={handleConfirmLogout} onCancel={() => setIsLogoutConfirmOpen(false)} />
       )}
     </header>
   );
