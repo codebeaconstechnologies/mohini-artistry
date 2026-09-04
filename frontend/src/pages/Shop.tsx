@@ -11,6 +11,7 @@ import { WHATSAPP_NUMBER } from "../lib/constants";
 const CUSTOM_PRICE_CATEGORIES: Record<string, string> = {
   "resin-reflections": "Price depends on the size you choose.",
   "fabric-canvas-art": "Price depends on the size and design you choose.",
+  "moti-art-decor": "Price depends on the size and design you choose.",
 };
 
 export default function Shop() {
