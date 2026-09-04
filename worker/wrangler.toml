@@ -5,7 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 FRONTEND_ORIGIN = "https://mohini-artistry-79f.pages.dev"
-RAZORPAY_KEY_ID = "rzp_live_TSIyc6DGbf8g4u"
+RAZORPAY_KEY_ID = "rzp_live_TXuuXTnabZzBGh"
 R2_PUBLIC_BASE_URL = "https://pub-6702c28f615d459fb820370b5b8c3c60.r2.dev"
 
 [[d1_databases]]
@@ -24,7 +24,7 @@ bucket_name = "mohini-artistry-product-images"
 
 [env.production.vars]
 FRONTEND_ORIGIN = "https://mohini-artistry-79f.pages.dev"
-RAZORPAY_KEY_ID = "rzp_live_TSIyc6DGbf8g4u"
+RAZORPAY_KEY_ID = "rzp_live_TXuuXTnabZzBGh"
 R2_PUBLIC_BASE_URL = "https://pub-6702c28f615d459fb820370b5b8c3c60.r2.dev"
 
 [[env.production.d1_databases]]
