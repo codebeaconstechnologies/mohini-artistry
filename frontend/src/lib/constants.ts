@@ -42,3 +42,10 @@ export const RECENTLY_VIEWED_STORAGE_KEY = "tag_recently_viewed";
 export const RECENTLY_VIEWED_MAX = 10;
 
 export const RAZORPAY_CHECKOUT_SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+
+/**
+ * Products priced below this (in paise) are treated as "contact for order"
+ * placeholders — no fixed price yet, so the price is hidden and a WhatsApp
+ * "Contact for Order" button is shown instead of Add to Cart.
+ */
+export const CONTACT_FOR_ORDER_MAX_PAISE = 500;

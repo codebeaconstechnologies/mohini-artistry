@@ -10,6 +10,7 @@ import StarRating from "../common/StarRating";
 import Badge from "../common/Badge";
 import { HeartIcon } from "../common/icons";
 import { getCategoryAccent } from "../../lib/categoryAccents";
+import { WHATSAPP_NUMBER, CONTACT_FOR_ORDER_MAX_PAISE } from "../../lib/constants";
 
 export default function ProductCard({ product }: { product: Product }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -22,6 +23,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const primaryImage = product.images[0];
   const outOfStock = product.stock <= 0;
+  const isContactForOrder = product.pricePaise < CONTACT_FOR_ORDER_MAX_PAISE;
   const categoryAccent = getCategoryAccent(product.categorySlug);
 
   function handleAddToCart(e: MouseEvent) {
@@ -30,6 +32,13 @@ export default function ProductCard({ product }: { product: Product }) {
     void addItem(product.id, 1);
     pushToast(`Added "${product.name}" to cart`, "success");
     openCart();
+  }
+
+  function handleContactForOrder(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const message = `Hi, I'd like to order "${product.name}"`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
   }
 
   function handleWishlist(e: MouseEvent) {
@@ -68,7 +77,7 @@ export default function ProductCard({ product }: { product: Product }) {
         >
           <HeartIcon filled={isWishlisted} className={`h-4 w-4 ${isWishlisted ? "text-magenta" : ""}`} />
         </button>
-        {outOfStock && (
+        {outOfStock && !isContactForOrder && (
           <div className="absolute inset-x-0 bottom-0 bg-teal/85 px-2 py-1.5 text-center text-[11px] font-semibold leading-tight text-white">
             We will create this genuine item for you as per your order &amp; requirement.
           </div>
@@ -81,17 +90,29 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
         <h3 className="line-clamp-2 text-sm font-medium text-teal">{product.name}</h3>
         {product.ratingCount > 0 && <StarRating rating={product.ratingAvg} count={product.ratingCount} />}
-        <div className="mt-auto pt-1">
-          <PriceTag pricePaise={product.pricePaise} compareAtPaise={product.compareAtPaise} size="sm" />
-        </div>
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={outOfStock}
-          className="mt-1 w-full rounded-full bg-magenta py-1.5 text-xs font-semibold text-white transition-colors hover:bg-magenta-hover disabled:cursor-not-allowed disabled:bg-hairline disabled:text-secondary"
-        >
-          {outOfStock ? "Out of Stock" : "Add to Cart"}
-        </button>
+        {!isContactForOrder && (
+          <div className="mt-auto pt-1">
+            <PriceTag pricePaise={product.pricePaise} compareAtPaise={product.compareAtPaise} size="sm" />
+          </div>
+        )}
+        {isContactForOrder ? (
+          <button
+            type="button"
+            onClick={handleContactForOrder}
+            className="mt-auto w-full rounded-full bg-magenta py-1.5 text-xs font-semibold text-white transition-colors hover:bg-magenta-hover"
+          >
+            Contact for Order
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={outOfStock}
+            className="mt-1 w-full rounded-full bg-magenta py-1.5 text-xs font-semibold text-white transition-colors hover:bg-magenta-hover disabled:cursor-not-allowed disabled:bg-hairline disabled:text-secondary"
+          >
+            {outOfStock ? "Out of Stock" : "Add to Cart"}
+          </button>
+        )}
       </div>
     </Link>
   );

@@ -17,7 +17,7 @@ import SimilarProducts from "../components/product/SimilarProducts";
 import Spinner from "../components/common/Spinner";
 import EmptyState from "../components/common/EmptyState";
 import { MinusIcon, PlusIcon } from "../components/common/icons";
-import { WHATSAPP_NUMBER } from "../lib/constants";
+import { WHATSAPP_NUMBER, CONTACT_FOR_ORDER_MAX_PAISE } from "../lib/constants";
 
 const CUSTOM_PRICE_CATEGORIES: Record<string, string> = {
   "resin-reflections": "Price depends on the size you choose. Contact us to customize this piece.",
@@ -87,9 +87,13 @@ export default function ProductDetail() {
   }
 
   const outOfStock = product.stock <= 0;
-  const customPriceNote = product.categorySlug ? CUSTOM_PRICE_CATEGORIES[product.categorySlug] : undefined;
+  const isContactForOrder = product.pricePaise < CONTACT_FOR_ORDER_MAX_PAISE;
+  const customPriceNote = !isContactForOrder && product.categorySlug ? CUSTOM_PRICE_CATEGORIES[product.categorySlug] : undefined;
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi, I'd like to enquire about customizing "${product.name}"`
+  )}`;
+  const contactForOrderHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Hi, I'd like to order "${product.name}"`
   )}`;
 
   function handleAddToCart() {
@@ -128,9 +132,11 @@ export default function ProductDetail() {
             {product.isBestseller && <Badge variant="bestseller">Bestseller</Badge>}
           </div>
 
-          <div className="mt-4">
-            <PriceTag pricePaise={product.pricePaise} compareAtPaise={product.compareAtPaise} size="lg" />
-          </div>
+          {!isContactForOrder && (
+            <div className="mt-4">
+              <PriceTag pricePaise={product.pricePaise} compareAtPaise={product.compareAtPaise} size="lg" />
+            </div>
+          )}
 
           {customPriceNote && (
             <div className="mt-3 rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-teal">
@@ -146,55 +152,72 @@ export default function ProductDetail() {
             </div>
           )}
 
-          <p className="mt-2 text-sm font-medium">
-            {outOfStock ? (
-              <span className="text-red-600">We will create this genuine item for you as per your order & requirement.</span>
-            ) : product.stock <= 5 ? (
-              <span className="font-semibold text-orange">Only {product.stock} left in stock</span>
-            ) : (
-              <span className="text-green-700">In stock</span>
-            )}
-          </p>
+          {!isContactForOrder && (
+            <p className="mt-2 text-sm font-medium">
+              {outOfStock ? (
+                <span className="text-red-600">We will create this genuine item for you as per your order & requirement.</span>
+              ) : product.stock <= 5 ? (
+                <span className="font-semibold text-orange">Only {product.stock} left in stock</span>
+              ) : (
+                <span className="text-green-700">In stock</span>
+              )}
+            </p>
+          )}
 
           <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-secondary">{product.description}</p>
 
-          {!outOfStock && (
-            <div className="mt-6 flex items-center gap-3">
-              <div className="flex items-center gap-3 rounded-full border border-hairline px-3 py-1.5">
-                <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} aria-label="Decrease quantity" className="text-secondary">
-                  <MinusIcon className="h-3.5 w-3.5" />
-                </button>
-                <span className="w-6 text-center text-sm">{quantity}</span>
+          {isContactForOrder ? (
+            <div className="mt-6">
+              <a
+                href={contactForOrderHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block rounded-full bg-magenta px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-magenta-hover"
+              >
+                Contact for Order
+              </a>
+            </div>
+          ) : (
+            <>
+              {!outOfStock && (
+                <div className="mt-6 flex items-center gap-3">
+                  <div className="flex items-center gap-3 rounded-full border border-hairline px-3 py-1.5">
+                    <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} aria-label="Decrease quantity" className="text-secondary">
+                      <MinusIcon className="h-3.5 w-3.5" />
+                    </button>
+                    <span className="w-6 text-center text-sm">{quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                      aria-label="Increase quantity"
+                      className="text-secondary"
+                    >
+                      <PlusIcon className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-4 flex flex-wrap gap-3">
                 <button
                   type="button"
-                  onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                  aria-label="Increase quantity"
-                  className="text-secondary"
+                  onClick={handleAddToCart}
+                  disabled={outOfStock}
+                  className="flex-1 rounded-full border border-teal px-6 py-3 text-sm font-semibold text-teal transition-colors hover:bg-teal hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
                 >
-                  <PlusIcon className="h-3.5 w-3.5" />
+                  Add to Cart
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  disabled={outOfStock}
+                  className="flex-1 rounded-full bg-magenta px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-magenta-hover disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
+                >
+                  Buy Now
                 </button>
               </div>
-            </div>
+            </>
           )}
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              disabled={outOfStock}
-              className="flex-1 rounded-full border border-teal px-6 py-3 text-sm font-semibold text-teal transition-colors hover:bg-teal hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
-            >
-              Add to Cart
-            </button>
-            <button
-              type="button"
-              onClick={handleBuyNow}
-              disabled={outOfStock}
-              className="flex-1 rounded-full bg-magenta px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-magenta-hover disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
-            >
-              Buy Now
-            </button>
-          </div>
         </div>
       </div>
 
