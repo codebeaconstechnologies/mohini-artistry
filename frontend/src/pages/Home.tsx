@@ -8,11 +8,11 @@ import ProductGrid from "../components/product/ProductGrid";
 import Spinner from "../components/common/Spinner";
 import { getCategoryAccent } from "../lib/categoryAccents";
 
-const CATEGORY_TILE_EMOJI: Record<string, string> = {
-  "instant-rangoli": "✨",
-  "resin-reflections": "💎",
-  "fabric-canvas-art": "🎨",
-  "moti-art-decor": "🧿",
+const CATEGORY_TILE_IMAGE: Record<string, string> = {
+  "instant-rangoli": "/categories/instant-rangoli.png",
+  "resin-reflections": "/categories/resin-reflections.png",
+  "fabric-canvas-art": "/categories/fabric-canvas-art.png",
+  "moti-art-decor": "/categories/moti-art-decor.png",
 };
 
 function ProductSection({
@@ -115,9 +115,12 @@ export default function Home() {
                   to={`/shop/${cat.slug}`}
                   className={`group flex aspect-square flex-col items-center justify-center gap-3 rounded-3xl p-5 text-center shadow-sm ring-1 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl ${accent.bg} ${accent.ring}`}
                 >
-                  <span className="text-6xl transition-transform duration-300 group-hover:scale-110 sm:text-7xl">
-                    {CATEGORY_TILE_EMOJI[cat.slug] ?? "🎁"}
-                  </span>
+                  <img
+                    src={CATEGORY_TILE_IMAGE[cat.slug]}
+                    alt=""
+                    className="h-20 w-20 object-contain transition-transform duration-300 group-hover:scale-110 sm:h-24 sm:w-24"
+                    loading="lazy"
+                  />
                   <span className={`font-display text-base font-bold sm:text-lg ${accent.text}`}>{cat.name}</span>
                   <span className="line-clamp-2 text-xs text-secondary">{cat.description}</span>
                 </Link>
