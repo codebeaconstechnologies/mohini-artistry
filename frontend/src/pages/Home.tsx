@@ -9,9 +9,9 @@ import Spinner from "../components/common/Spinner";
 import { getCategoryAccent } from "../lib/categoryAccents";
 
 const CATEGORY_TILE_IMAGE: Record<string, string> = {
-  "instant-rangoli": "/categories/instant-rangoli.png",
+  "instant-rangoli": "/categories/instant-rangoli.png?v=2",
   "resin-reflections": "/categories/resin-reflections.png",
-  "fabric-canvas-art": "/categories/fabric-canvas-art.png",
+  "fabric-canvas-art": "/categories/fabric-canvas-art.png?v=2",
   "moti-art-decor": "/categories/moti-art-decor.png",
 };
 
