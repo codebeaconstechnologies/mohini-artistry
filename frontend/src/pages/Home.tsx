@@ -12,6 +12,7 @@ const CATEGORY_TILE_EMOJI: Record<string, string> = {
   "instant-rangoli": "✨",
   "resin-reflections": "💎",
   "fabric-canvas-art": "🎨",
+  "moti-art-decor": "📿",
 };
 
 function ProductSection({

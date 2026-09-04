@@ -20,6 +20,7 @@ const CATEGORY_ACCENTS: Record<string, CategoryAccent> = {
   "instant-rangoli": { text: "text-orange", ring: "ring-orange/30", secondaryText: "text-gold" },
   "resin-reflections": { text: "text-turquoise", ring: "ring-turquoise/30", secondaryText: "text-teal" },
   "fabric-canvas-art": { text: "text-magenta", ring: "ring-purple/30", secondaryText: "text-purple" },
+  "moti-art-decor": { text: "text-gold", ring: "ring-gold/30", secondaryText: "text-orange" },
 };
 
 export function getCategoryAccent(slug: string | undefined): CategoryAccent {

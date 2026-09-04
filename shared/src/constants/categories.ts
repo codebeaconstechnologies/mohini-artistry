@@ -24,6 +24,12 @@ export const CATEGORY_SEEDS: CategorySeed[] = [
     description: "Hand-painted fabric canvases and wall hangings blending traditional motifs with modern colour.",
     sortOrder: 3,
   },
+  {
+    slug: "moti-art-decor",
+    name: "Moti Art & Décor",
+    description: "Beaded moti (pearl) art and décor pieces — torans, wall hangings and festive décor strung by hand.",
+    sortOrder: 4,
+  },
 ];
 
 export const CATEGORY_SLUGS = CATEGORY_SEEDS.map((c) => c.slug);

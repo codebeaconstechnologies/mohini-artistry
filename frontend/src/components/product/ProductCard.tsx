@@ -69,8 +69,8 @@ export default function ProductCard({ product }: { product: Product }) {
           <HeartIcon filled={isWishlisted} className={`h-4 w-4 ${isWishlisted ? "text-magenta" : ""}`} />
         </button>
         {outOfStock && (
-          <div className="absolute inset-x-0 bottom-0 bg-teal/85 py-1 text-center text-xs font-semibold text-white">
-            Out of Stock
+          <div className="absolute inset-x-0 bottom-0 bg-teal/85 px-2 py-1.5 text-center text-[11px] font-semibold leading-tight text-white">
+            We will create this genuine item for you as per your order &amp; requirement.
           </div>
         )}
       </div>

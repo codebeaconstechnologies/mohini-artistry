@@ -5,7 +5,7 @@ import EmptyState from "../common/EmptyState";
 export default function ProductGrid({
   products,
   emptyTitle = "Nothing here yet",
-  emptyMessage = "No products found. Try adjusting your filters.",
+  emptyMessage = "As we craft your order on your demand, so contact us for ordering.",
 }: {
   products: Product[];
   emptyTitle?: string;

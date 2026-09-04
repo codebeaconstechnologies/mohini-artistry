@@ -1,7 +1,8 @@
 INSERT INTO categories (slug, name, description, sort_order) VALUES
   ('instant-rangoli', 'Instant Rangoli', 'Ready-to-place rangoli mats and stencil sets for a flawless design in seconds, no powder or mess.', 1),
   ('resin-reflections', 'Resin Reflections', 'Hand-poured resin art — coasters, trays, wall pieces and keepsakes with a glass-like finish.', 2),
-  ('fabric-canvas-art', 'Fabric Canvas Art', 'Hand-painted fabric canvases and wall hangings blending traditional motifs with modern colour.', 3);
+  ('fabric-canvas-art', 'Fabric Canvas Art', 'Hand-painted fabric canvases and wall hangings blending traditional motifs with modern colour.', 3),
+  ('moti-art-decor', 'Moti Art & Décor', 'Beaded moti (pearl) art and décor pieces — torans, wall hangings and festive décor strung by hand.', 4);
 
 -- ---------------------------------------------------------------------------
 -- Sample products (demo/seed data only — real photography will replace the
@@ -71,6 +72,20 @@ INSERT INTO products (
     (CAST(strftime('%s','now') AS INTEGER) * 1000) - (30 * 86400000),
     (CAST(strftime('%s','now') AS INTEGER) * 1000) - (30 * 86400000)),
 
+  -- Resin Reflections — Fridge Magnets (2)
+  ('resin-floral-fridge-magnet-set', 'Floral Resin Fridge Magnet Set of 4',
+    (SELECT id FROM categories WHERE slug = 'resin-reflections'),
+    'A set of four petite resin fridge magnets, each with a pressed real flower suspended under a glossy dome finish.',
+    29900, NULL, 40, 1, 0, 1, 0, 0, 0,
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (6 * 86400000),
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (6 * 86400000)),
+  ('resin-mandala-fridge-magnet-set', 'Mandala Resin Fridge Magnet Set of 4',
+    (SELECT id FROM categories WHERE slug = 'resin-reflections'),
+    'Hand-poured mini mandala designs in resin, finished with fine gold and coloured accents — a set of four fridge magnets.',
+    32900, 37900, 0, 0, 0, 1, 0, 0, 0,
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (8 * 86400000),
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (8 * 86400000)),
+
   -- Fabric Canvas Art (4)
   ('fabric-madhubani-elephant-canvas', 'Madhubani Elephant Hand-Painted Canvas',
     (SELECT id FROM categories WHERE slug = 'fabric-canvas-art'),
@@ -95,7 +110,21 @@ INSERT INTO products (
     'A hand-painted lotus mandala in layered pinks and golds on soft cotton fabric, sized to double as a tapestry or a floor spread.',
     129900, 149900, 16, 1, 1, 1, 0, 0, 0,
     (CAST(strftime('%s','now') AS INTEGER) * 1000) - (5 * 86400000),
-    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (5 * 86400000));
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (5 * 86400000)),
+
+  -- Moti Art & Décor (2)
+  ('moti-pearl-toran-door-hanging', 'Pearl Moti Toran Door Hanging',
+    (SELECT id FROM categories WHERE slug = 'moti-art-decor'),
+    'A traditional door toran hand-strung with white and gold moti beads, finished with tassels — a festive accent for any entryway.',
+    89900, NULL, 22, 1, 0, 1, 0, 0, 0,
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (7 * 86400000),
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (7 * 86400000)),
+  ('moti-beaded-wall-hanging', 'Beaded Moti Wall Hanging',
+    (SELECT id FROM categories WHERE slug = 'moti-art-decor'),
+    'An intricately beaded moti wall décor piece in a mandala layout, hand-strung on a wooden ring for a statement wall accent.',
+    129900, 149900, 0, 0, 1, 1, 0, 0, 0,
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (9 * 86400000),
+    (CAST(strftime('%s','now') AS INTEGER) * 1000) - (9 * 86400000));
 
 INSERT INTO product_images (product_id, r2_key, url, sort_order, is_primary) VALUES
   ((SELECT id FROM products WHERE slug = 'instant-sanskar-bharti-stencil-set'), 'seed/instant-sanskar-bharti-stencil-set-1.jpg', 'https://picsum.photos/seed/instant-sanskar-bharti-stencil-set-1/800/800', 0, 1),
@@ -129,4 +158,14 @@ INSERT INTO product_images (product_id, r2_key, url, sort_order, is_primary) VAL
   ((SELECT id FROM products WHERE slug = 'fabric-peacock-dance-canvas'), 'seed/fabric-peacock-dance-canvas-1.jpg', 'https://picsum.photos/seed/fabric-peacock-dance-canvas-1/800/800', 0, 1),
   ((SELECT id FROM products WHERE slug = 'fabric-peacock-dance-canvas'), 'seed/fabric-peacock-dance-canvas-2.jpg', 'https://picsum.photos/seed/fabric-peacock-dance-canvas-2/800/800', 1, 0),
 
-  ((SELECT id FROM products WHERE slug = 'fabric-lotus-mandala-tapestry'), 'seed/fabric-lotus-mandala-tapestry-1.jpg', 'https://picsum.photos/seed/fabric-lotus-mandala-tapestry-1/800/800', 0, 1);
+  ((SELECT id FROM products WHERE slug = 'fabric-lotus-mandala-tapestry'), 'seed/fabric-lotus-mandala-tapestry-1.jpg', 'https://picsum.photos/seed/fabric-lotus-mandala-tapestry-1/800/800', 0, 1),
+
+  ((SELECT id FROM products WHERE slug = 'resin-floral-fridge-magnet-set'), 'seed/resin-floral-fridge-magnet-set-1.jpg', 'https://picsum.photos/seed/resin-floral-fridge-magnet-set-1/800/800', 0, 1),
+  ((SELECT id FROM products WHERE slug = 'resin-floral-fridge-magnet-set'), 'seed/resin-floral-fridge-magnet-set-2.jpg', 'https://picsum.photos/seed/resin-floral-fridge-magnet-set-2/800/800', 1, 0),
+
+  ((SELECT id FROM products WHERE slug = 'resin-mandala-fridge-magnet-set'), 'seed/resin-mandala-fridge-magnet-set-1.jpg', 'https://picsum.photos/seed/resin-mandala-fridge-magnet-set-1/800/800', 0, 1),
+
+  ((SELECT id FROM products WHERE slug = 'moti-pearl-toran-door-hanging'), 'seed/moti-pearl-toran-door-hanging-1.jpg', 'https://picsum.photos/seed/moti-pearl-toran-door-hanging-1/800/800', 0, 1),
+  ((SELECT id FROM products WHERE slug = 'moti-pearl-toran-door-hanging'), 'seed/moti-pearl-toran-door-hanging-2.jpg', 'https://picsum.photos/seed/moti-pearl-toran-door-hanging-2/800/800', 1, 0),
+
+  ((SELECT id FROM products WHERE slug = 'moti-beaded-wall-hanging'), 'seed/moti-beaded-wall-hanging-1.jpg', 'https://picsum.photos/seed/moti-beaded-wall-hanging-1/800/800', 0, 1);

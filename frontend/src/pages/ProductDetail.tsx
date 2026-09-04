@@ -17,6 +17,12 @@ import SimilarProducts from "../components/product/SimilarProducts";
 import Spinner from "../components/common/Spinner";
 import EmptyState from "../components/common/EmptyState";
 import { MinusIcon, PlusIcon } from "../components/common/icons";
+import { WHATSAPP_NUMBER } from "../lib/constants";
+
+const CUSTOM_PRICE_CATEGORIES: Record<string, string> = {
+  "resin-reflections": "Price depends on the size you choose. Contact us to customize this piece.",
+  "fabric-canvas-art": "Price depends on the size and design you choose. Contact us to customize this piece.",
+};
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -80,6 +86,10 @@ export default function ProductDetail() {
   }
 
   const outOfStock = product.stock <= 0;
+  const customPriceNote = product.categorySlug ? CUSTOM_PRICE_CATEGORIES[product.categorySlug] : undefined;
+  const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Hi, I'd like to enquire about customizing "${product.name}"`
+  )}`;
 
   function handleAddToCart() {
     if (!product) return;
@@ -121,9 +131,23 @@ export default function ProductDetail() {
             <PriceTag pricePaise={product.pricePaise} compareAtPaise={product.compareAtPaise} size="lg" />
           </div>
 
+          {customPriceNote && (
+            <div className="mt-3 rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-teal">
+              <p>{customPriceNote}</p>
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-block font-semibold text-turquoise underline"
+              >
+                Contact us for customization
+              </a>
+            </div>
+          )}
+
           <p className="mt-2 text-sm font-medium">
             {outOfStock ? (
-              <span className="text-red-600">Out of stock</span>
+              <span className="text-red-600">We will create this genuine item for you as per your order & requirement.</span>
             ) : product.stock <= 5 ? (
               <span className="font-semibold text-orange">Only {product.stock} left in stock</span>
             ) : (

@@ -6,6 +6,12 @@ import { productsApi } from "../api/products";
 import ProductGrid from "../components/product/ProductGrid";
 import FilterSortBar, { type ProductFilters } from "../components/product/FilterSortBar";
 import Spinner from "../components/common/Spinner";
+import { WHATSAPP_NUMBER } from "../lib/constants";
+
+const CUSTOM_PRICE_CATEGORIES: Record<string, string> = {
+  "resin-reflections": "Price depends on the size you choose.",
+  "fabric-canvas-art": "Price depends on the size and design you choose.",
+};
 
 export default function Shop() {
   const { categorySlug } = useParams<{ categorySlug?: string }>();
@@ -70,12 +76,24 @@ export default function Shop() {
   }, [categorySlug, filters.minPrice, filters.maxPrice, filters.bestseller, filters.mostLoved, filters.topRated, filters.sort]);
 
   const category = CATEGORY_SEEDS.find((c) => c.slug === categorySlug);
+  const customPriceNote = categorySlug ? CUSTOM_PRICE_CATEGORIES[categorySlug] : undefined;
+  const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Hi, I'd like to enquire about customizing a ${category?.name ?? "product"}`
+  )}`;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-6">
         <h1 className="font-display text-3xl font-bold text-teal">{category ? category.name : "Shop All"}</h1>
         {category && <p className="mt-1 max-w-2xl text-sm text-secondary">{category.description}</p>}
+        {customPriceNote && (
+          <div className="mt-3 inline-flex flex-wrap items-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-4 py-2 text-sm text-teal">
+            <span>{customPriceNote}</span>
+            <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="font-semibold text-turquoise underline">
+              Contact us for customization
+            </a>
+          </div>
+        )}
       </div>
 
       <FilterSortBar filters={filters} onChange={handleFilterChange} />
