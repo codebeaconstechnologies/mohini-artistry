@@ -12,7 +12,7 @@ const CATEGORY_TILE_EMOJI: Record<string, string> = {
   "instant-rangoli": "✨",
   "resin-reflections": "💎",
   "fabric-canvas-art": "🎨",
-  "moti-art-decor": "📿",
+  "moti-art-decor": "🧿",
 };
 
 function ProductSection({
@@ -106,17 +106,20 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-5">
             {CATEGORY_SEEDS.map((cat) => {
               const accent = getCategoryAccent(cat.slug);
               return (
                 <Link
                   key={cat.slug}
                   to={`/shop/${cat.slug}`}
-                  className={`flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl bg-softwhite/90 p-4 text-center shadow-sm ring-1 transition-transform hover:-translate-y-1 hover:shadow-md ${accent.ring}`}
+                  className={`group flex aspect-square flex-col items-center justify-center gap-3 rounded-3xl p-5 text-center shadow-sm ring-1 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl ${accent.bg} ${accent.ring}`}
                 >
-                  <span className="text-3xl">{CATEGORY_TILE_EMOJI[cat.slug] ?? "🎁"}</span>
-                  <span className="text-sm font-semibold text-teal">{cat.name}</span>
+                  <span className="text-6xl transition-transform duration-300 group-hover:scale-110 sm:text-7xl">
+                    {CATEGORY_TILE_EMOJI[cat.slug] ?? "🎁"}
+                  </span>
+                  <span className={`font-display text-base font-bold sm:text-lg ${accent.text}`}>{cat.name}</span>
+                  <span className="line-clamp-2 text-xs text-secondary">{cat.description}</span>
                 </Link>
               );
             })}
